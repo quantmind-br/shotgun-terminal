@@ -1,0 +1,2 @@
+[console_scripts]
+shotgun-terminal = shotgun_terminal.cli:main

@@ -1,3 +1,30 @@
+Metadata-Version: 2.4
+Name: shotgun-terminal
+Version: 0.1.0
+Summary: Terminal version of Shotgun - Generate comprehensive project context for LLM workflows
+Author: Shotgun Code Team
+License: MIT
+Project-URL: Homepage, https://github.com/shotgun-code/shotgun-terminal
+Project-URL: Repository, https://github.com/shotgun-code/shotgun-terminal
+Project-URL: Issues, https://github.com/shotgun-code/shotgun-terminal/issues
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.0.0
+Requires-Dist: rich>=10.0.0
+Requires-Dist: inquirer>=2.8.0
+Requires-Dist: openai>=1.0.0
+Requires-Dist: requests>=2.25.0
+Dynamic: requires-python
+
 # 🔫 Shotgun Terminal
 
 Terminal version of Shotgun - Generate comprehensive project context for LLM workflows with automatic translation support.

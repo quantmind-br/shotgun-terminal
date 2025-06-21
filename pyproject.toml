@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shotgun-terminal"
+version = "0.1.0"
+description = "Terminal version of Shotgun - Generate comprehensive project context for LLM workflows"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Shotgun Code Team"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.0.0",
+    "rich>=10.0.0",
+    "inquirer>=2.8.0",
+    "openai>=1.0.0",
+    "requests>=2.25.0",
+]
+
+[project.scripts]
+shotgun-terminal = "shotgun_terminal.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/shotgun-code/shotgun-terminal"
+Repository = "https://github.com/shotgun-code/shotgun-terminal"
+Issues = "https://github.com/shotgun-code/shotgun-terminal/issues"
