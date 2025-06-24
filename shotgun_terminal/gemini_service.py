@@ -75,7 +75,7 @@ class GeminiService:
                 return False
                 
         except Exception as e:
-            console.print(f"[red]Error testing Gemini API:[/red] {e}")
+            console.print("[red]Error testing Gemini API:[/red]", str(e))
             return False
     
     def generate_response(self, prompt: str, temperature: float = 0.35, thinking_budget: int = 32768) -> Optional[str]:
@@ -86,15 +86,15 @@ class GeminiService:
             
         # Validate parameters
         if not (0.0 <= temperature <= 2.0):
-            console.print(f"[red]Error:[/red] Temperature must be between 0.0 and 2.0, got {temperature}")
+            console.print("[red]Error:[/red] Temperature must be between 0.0 and 2.0, got", temperature)
             return None
             
         if not (0 <= thinking_budget <= 32768):
-            console.print(f"[red]Error:[/red] Thinking budget must be between 0 and 32768, got {thinking_budget}")
+            console.print("[red]Error:[/red] Thinking budget must be between 0 and 32768, got", thinking_budget)
             return None
             
         try:
-            console.print(f"[yellow]🤖 Sending prompt to Gemini API...[/yellow]")
+            console.print("[yellow]🤖 Sending prompt to Gemini API...[/yellow]")
             console.print(f"[dim]Temperature: {temperature}, Thinking Budget: {thinking_budget}[/dim]")
             
             # Prepare content
@@ -144,14 +144,14 @@ class GeminiService:
             
             if full_response:
                 console.print("[green]✓[/green] Response received successfully")
-                console.print(f"[dim]Response length: {len(full_response)} characters[/dim]")
+                console.print("[dim]Response length:", len(full_response), "characters[/dim]")
                 return full_response
             else:
                 console.print("[red]Error:[/red] Empty response from Gemini API")
                 return None
                 
         except Exception as e:
-            console.print(f"[red]Error generating response:[/red] {e}")
+            console.print("[red]Error generating response:[/red]", str(e))
             return None
     
     def save_response(self, response: str, output_dir: str = ".") -> Optional[str]:
@@ -168,7 +168,7 @@ class GeminiService:
             return str(filepath)
             
         except Exception as e:
-            console.print(f"[red]Error saving response:[/red] {e}")
+            console.print("[red]Error saving response:[/red]", str(e))
             return None
     
     def process_prompt(self, prompt: str, temperature: float = 0.35, thinking_budget: int = 32768, 
