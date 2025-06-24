@@ -6,10 +6,12 @@ shotgun_terminal/cli.py
 shotgun_terminal/config.py
 shotgun_terminal/context_generator.py
 shotgun_terminal/file_selector.py
+shotgun_terminal/gemini_service.py
 shotgun_terminal/prompts.py
 shotgun_terminal/settings.py
 shotgun_terminal/translator.py
 shotgun_terminal/tree_generator.py
+shotgun_terminal/tree_selector.py
 shotgun_terminal/user_input.py
 shotgun_terminal.egg-info/PKG-INFO
 shotgun_terminal.egg-info/SOURCES.txt

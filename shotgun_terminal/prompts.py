@@ -261,7 +261,7 @@ Your **ONLY** output will be a single, well-structured Markdown document. No oth
 ---"""
 
 PROMPT_TEMPLATES = {
-    'dev': """## ROLE & PRIMARY GOAL:
+    "dev": """## ROLE & PRIMARY GOAL:
 You are a "Robotic Senior Software Engineer AI". Your mission is to meticulously analyze the user's coding request (`User Task`), strictly adhere to `Guiding Principles` and `User Rules`, comprehend the existing `File Structure`, and then generate a precise set of code changes. Your *sole and exclusive output* must be a single `git diff` formatted text. Zero tolerance for any deviation from the specified output format.
 
 ---
@@ -329,8 +329,7 @@ The `File Structure` (provided in the next section) is formatted as follows:
 {PROJECT_TREE}
 
 {FILE_STRUCTURE}""",
-
-    'architect': """## ROLE & PRIMARY GOAL:
+    "architect": """## ROLE & PRIMARY GOAL:
 You are a "Robotic Senior System Architect AI". Your mission is to meticulously analyze the user's refactoring or design request (`User Task`), strictly adhere to `Guiding Principles` and `User Rules`, comprehend the existing `File Structure` (if provided and relevant), and then generate a comprehensive, actionable plan. Your *sole and exclusive output* must be a single, well-structured Markdown document detailing this plan. Zero tolerance for any deviation from the specified output format.
 
 ---
@@ -400,8 +399,7 @@ The `File Structure` (provided in the next section, if applicable) is formatted 
 {PROJECT_TREE}
 
 {FILE_STRUCTURE}""",
-
-    'bug': """## ROLE & PRIMARY GOAL:
+    "bug": """## ROLE & PRIMARY GOAL:
 You are a "Robotic Senior Debugging Analyst AI". Your mission is to meticulously trace code execution paths based on the user's bug description (`User Task`), identify potential root causes, strictly adhere to `Guiding Principles` and `User Rules`, comprehend the existing `File Structure` (if provided and relevant), and then generate a comprehensive, detailed **Bug Analysis Report**. Your *sole and exclusive output* must be a single, well-structured Markdown document detailing this analysis. Zero tolerance for any deviation from the specified output format.
 
 ---
@@ -475,46 +473,56 @@ The `File Structure` (provided in the next section, if applicable) is formatted 
 ## 6. File Structure
 {PROJECT_TREE}
 
-{FILE_STRUCTURE}"""
+{FILE_STRUCTURE}""",
 }
 
-def process_template(template_type: str, task: str, rules: str, file_structure: str, project_tree: str = "") -> str:
+
+def process_template(
+    template_type: str,
+    task: str,
+    rules: str,
+    file_structure: str,
+    project_tree: str = "",
+) -> str:
     """Process template with placeholder replacement."""
-    template = PROMPT_TEMPLATES.get(template_type, PROMPT_TEMPLATES['dev'])
-    
+    template = PROMPT_TEMPLATES.get(template_type, PROMPT_TEMPLATES["dev"])
+
     # Select appropriate output format constraints based on template type
-    if template_type == 'architect':
+    if template_type == "architect":
         output_constraints = OUTPUT_FORMAT_CONSTRAINTS_ARCHITECT
-    elif template_type == 'bug':
+    elif template_type == "bug":
         output_constraints = OUTPUT_FORMAT_CONSTRAINTS_BUG
     else:  # dev mode
         output_constraints = OUTPUT_FORMAT_CONSTRAINTS_DEV
-    
+
     # Process user rules section
     rules_section = _format_user_rules(rules.strip(), template_type)
-    
+
     # Replace placeholders
-    processed = template.replace('{TASK}', task.strip())
-    processed = processed.replace('{RULES}', rules_section)
-    processed = processed.replace('{FILE_STRUCTURE}', file_structure.strip())
-    processed = processed.replace('{PROJECT_TREE}', project_tree.strip())
-    processed = processed.replace('{OUTPUT_FORMAT_CONSTRAINTS}', output_constraints)
-    processed = processed.replace('{CURRENT_DATE}', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    
+    processed = template.replace("{TASK}", task.strip())
+    processed = processed.replace("{RULES}", rules_section)
+    processed = processed.replace("{FILE_STRUCTURE}", file_structure.strip())
+    processed = processed.replace("{PROJECT_TREE}", project_tree.strip())
+    processed = processed.replace("{OUTPUT_FORMAT_CONSTRAINTS}", output_constraints)
+    processed = processed.replace(
+        "{CURRENT_DATE}", datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+
     return processed
+
 
 def _format_user_rules(rules: str, template_type: str) -> str:
     """Format user rules section based on whether rules are provided."""
-    
+
     if not rules or rules.strip() == "":
         return "No specific user rules provided."
-    
+
     # Get appropriate explanatory text based on template type
-    if template_type == 'architect':
-        explanation = "*(These are user-provided, project-specific rules, methodological preferences (e.g., \"Prioritize DDD principles\"), or task constraints. They take precedence over `Guiding Principles`.)*"
-    elif template_type == 'bug':
-        explanation = "*(Example: \"Assume PostgreSQL is used as the DB.\", \"Focus on backend logic.\", \"Do not consider UI problems unless they indicate an error in data coming from the backend.\")*"
+    if template_type == "architect":
+        explanation = '*(These are user-provided, project-specific rules, methodological preferences (e.g., "Prioritize DDD principles"), or task constraints. They take precedence over `Guiding Principles`.)*'
+    elif template_type == "bug":
+        explanation = '*(Example: "Assume PostgreSQL is used as the DB.", "Focus on backend logic.", "Do not consider UI problems unless they indicate an error in data coming from the backend.")*'
     else:  # dev mode
         explanation = "*(These are user-provided, project-specific rules or task constraints. They take precedence over `Guiding Principles`.)*"
-    
+
     return f"{rules}\n{explanation}"
