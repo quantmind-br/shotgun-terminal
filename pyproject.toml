@@ -29,6 +29,7 @@ dependencies = [
     "inquirer>=2.8.0",
     "openai>=1.0.0",
     "requests>=2.25.0",
+    "google-genai>=1.0.0",
 ]
 
 [project.scripts]

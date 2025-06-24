@@ -16,6 +16,7 @@ from .user_input import UserInputCollector
 from .settings import SettingsManager
 from .config import ConfigManager
 from .translator import TranslationService
+from .gemini_service import GeminiService
 
 console = Console()
 
@@ -26,8 +27,9 @@ console = Console()
 @click.option('--prompt-type', '-p', type=click.Choice(['dev', 'architect', 'bug']), 
               help='Type of prompt to generate')
 @click.option('--config', is_flag=True, help='Configure API settings for translation')
+@click.option('--gemini-config', is_flag=True, help='Configure Gemini API settings')
 @click.option('--quick-setup', is_flag=True, help='Quick setup with test credentials')
-def main(directory, output, prompt_type, config, quick_setup):
+def main(directory, output, prompt_type, config, gemini_config, quick_setup):
     """Shotgun Terminal - Generate comprehensive project context for LLM workflows."""
     
     console.print(Panel.fit(
@@ -37,11 +39,13 @@ def main(directory, output, prompt_type, config, quick_setup):
     ))
     
     # Handle configuration commands
-    if config or quick_setup:
+    if config or gemini_config or quick_setup:
         config_manager = ConfigManager()
         
         if quick_setup:
             config_manager.quick_setup()
+        elif gemini_config:
+            config_manager.configure_gemini()
         else:
             config_manager.configure_api()
         
@@ -51,6 +55,7 @@ def main(directory, output, prompt_type, config, quick_setup):
     settings = SettingsManager()
     user_input = UserInputCollector()
     translator = TranslationService()
+    gemini_service = GeminiService()
     
     # Step 1: Select project directory
     if not directory:
@@ -146,14 +151,59 @@ def main(directory, output, prompt_type, config, quick_setup):
     # Step 8: Generate context
     console.print("\n" + "="*60)
     console.print(f"[yellow]Generating context...[/yellow]")
-    generate_context(directory, included_files, ignore_patterns, prompt_type, output, user_task, custom_rules)
+    final_output = generate_context(directory, included_files, ignore_patterns, prompt_type, output, user_task, custom_rules)
     
-    console.print(f"\n[bold green]🎉 Success![/bold green]")
-    console.print(f"[green]✓[/green] Context generated successfully!")
-    console.print(f"[green]✓[/green] Output saved to: {output}")
-    
-    # Show final summary
-    show_summary(output, user_task, len(included_files))
+    # Step 9: Check if Gemini is enabled and process if so
+    if settings.is_gemini_enabled():
+        console.print("\n" + "="*60)
+        console.print("[yellow]🤖 Gemini integration enabled - processing prompt...[/yellow]")
+        
+        api_key = settings.get_gemini_api_key()
+        if api_key:
+            # Configure Gemini service
+            if gemini_service.configure(api_key):
+                # Get Gemini settings
+                temperature = settings.get_gemini_temperature()
+                thinking_budget = settings.get_gemini_thinking_budget()
+                
+                # Process with Gemini
+                gemini_output_file = gemini_service.process_prompt(
+                    final_output, 
+                    temperature=temperature, 
+                    thinking_budget=thinking_budget,
+                    output_dir=os.path.dirname(output) if output else "."
+                )
+                
+                if gemini_output_file:
+                    console.print(f"\n[bold green]🎉 Gemini Processing Complete![/bold green]")
+                    console.print(f"[green]✓[/green] Context generated and processed by Gemini")
+                    console.print(f"[green]✓[/green] Original context saved to: {output}")
+                    console.print(f"[green]✓[/green] Gemini response saved to: {gemini_output_file}")
+                    
+                    # Show Gemini summary
+                    show_gemini_summary(gemini_output_file, user_task, len(included_files), temperature, thinking_budget)
+                else:
+                    console.print(f"\n[yellow]⚠️  Gemini processing failed - using standard output[/yellow]")
+                    console.print(f"[green]✓[/green] Context generated successfully!")
+                    console.print(f"[green]✓[/green] Output saved to: {output}")
+                    show_summary(output, user_task, len(included_files))
+            else:
+                console.print(f"\n[yellow]⚠️  Failed to configure Gemini - using standard output[/yellow]")
+                console.print(f"[green]✓[/green] Context generated successfully!")
+                console.print(f"[green]✓[/green] Output saved to: {output}")
+                show_summary(output, user_task, len(included_files))
+        else:
+            console.print(f"\n[yellow]⚠️  Gemini enabled but no API key configured - using standard output[/yellow]")
+            console.print(f"[green]✓[/green] Context generated successfully!")
+            console.print(f"[green]✓[/green] Output saved to: {output}")
+            show_summary(output, user_task, len(included_files))
+    else:
+        console.print(f"\n[bold green]🎉 Success![/bold green]")
+        console.print(f"[green]✓[/green] Context generated successfully!")
+        console.print(f"[green]✓[/green] Output saved to: {output}")
+        
+        # Show final summary
+        show_summary(output, user_task, len(included_files))
 
 
 def select_directory(settings):
@@ -244,10 +294,28 @@ def generate_context(directory, included_files, ignore_patterns, prompt_type, ou
         # Write to output file
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(final_output)
+        
+        # Return the final output for potential Gemini processing
+        return final_output
             
     except Exception as e:
         console.print(f"[red]Error generating context:[/red] {e}")
         raise
+
+
+def show_gemini_summary(gemini_output_file, user_task, file_count, temperature, thinking_budget):
+    """Show final summary with Gemini processing details."""
+    console.print(Panel.fit(
+        f"[bold green]🤖 Gemini Processing Summary[/bold green]\n\n"
+        f"[blue]Task:[/blue] {user_task[:100]}{'...' if len(user_task) > 100 else ''}\n"
+        f"[blue]Files processed:[/blue] {file_count}\n"
+        f"[blue]Temperature:[/blue] {temperature}\n"
+        f"[blue]Thinking Budget:[/blue] {thinking_budget}\n"
+        f"[blue]Gemini Response:[/blue] {gemini_output_file}\n\n"
+        f"[dim]The prompt has been automatically processed by Gemini AI. "
+        f"Check the response file for the generated content.[/dim]",
+        border_style="green"
+    ))
 
 
 def show_summary(output_file, user_task, file_count):
