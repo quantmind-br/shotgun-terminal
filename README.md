@@ -1,6 +1,6 @@
 # 🔫 Shotgun Terminal
 
-Terminal version of Shotgun - Generate comprehensive project context for LLM workflows with automatic translation support.
+Terminal version of Shotgun - Generate comprehensive project context for LLM workflows with automatic translation support and Google Gemini AI integration.
 
 ## 📋 Table of Contents
 
@@ -11,6 +11,7 @@ Terminal version of Shotgun - Generate comprehensive project context for LLM wor
 - [Prompt Types](#prompt-types)
 - [Configuration](#configuration)
 - [Translation](#translation)
+- [Gemini Integration](#gemini-integration)
 - [Advanced Usage](#advanced-usage)
 - [Examples](#examples)
 - [Development](#development)
@@ -27,7 +28,8 @@ Terminal version of Shotgun - Generate comprehensive project context for LLM wor
 - **📊 Project Tree Generation**: Visual project structure in output
 - **🔧 Session-based Rules**: Custom rules without persistent storage
 - **💾 Smart Settings**: XDG-compliant configuration storage
-- **🚀 No External Dependencies**: Pure Python implementation
+- **🤖 Gemini AI Integration**: Automated prompt processing with Google Gemini API
+- **🚀 Minimal Dependencies**: Clean Python implementation with optional AI features
 
 ## 📦 Installation
 
@@ -65,11 +67,16 @@ pip install -e .
    shotgun-terminal --config
    ```
 
+4. **Configure Gemini AI Integration**
+   ```bash
+   shotgun-terminal --gemini-config
+   ```
+
 ## 📖 Usage
 
 ### Basic Workflow
 
-The application guides you through a 7-step process:
+The application guides you through an 8-step process:
 
 1. **📂 Directory Selection**
    - Choose your project directory
@@ -109,6 +116,11 @@ The application guides you through a 7-step process:
    - Generate structured output file
    - Includes project tree and file contents
 
+8. **🤖 Gemini Processing** (If enabled)
+   - Automatically send prompt to Google Gemini API
+   - Receive AI-processed response
+   - Save to timestamped output file
+
 ### Command Line Options
 
 ```bash
@@ -118,7 +130,8 @@ Options:
   -d, --directory PATH     Project directory to analyze
   -o, --output PATH       Output file path 
   -p, --prompt-type TYPE  Prompt type (dev/architect/bug)
-  --config               Configure API settings
+  --config               Configure API settings for translation
+  --gemini-config        Configure Gemini API settings
   --quick-setup          Quick setup with test credentials
   --help                 Show help message
 ```
@@ -163,6 +176,20 @@ shotgun-terminal --config
 
 **Settings Storage**: `~/.config/shotgun-code/settings.json`
 
+### Gemini API Configuration
+
+```bash
+shotgun-terminal --gemini-config
+```
+
+**Interactive Menu Options:**
+- Configure Gemini API credentials
+- Test Gemini API connection
+- Configure parameters (temperature, thinking budget)
+- Toggle Gemini on/off
+- View current Gemini settings
+- Reset Gemini to defaults
+
 ### Quick Setup
 
 ```bash
@@ -195,6 +222,53 @@ Shotgun Terminal includes automatic translation from Portuguese to English:
     "enable_translation": true
   }
 }
+```
+
+## 🤖 Gemini Integration
+
+Shotgun Terminal includes optional integration with Google Gemini AI for automated prompt processing:
+
+### Features
+- **🚀 Automated Processing**: Send generated prompts directly to Gemini API
+- **⚙️ Configurable Parameters**: Fine-tune temperature and thinking budget
+- **📊 Real-time Streaming**: Live progress feedback during API calls
+- **🔄 Fallback Support**: Graceful degradation when API is unavailable
+- **📁 Smart Output**: Timestamped response files with clear naming
+
+### Configuration Parameters
+- **Temperature**: 0.0 - 2.0 (controls response randomness)
+- **Thinking Budget**: 0 - 32768 (reasoning computation budget)
+- **API Key**: Your Google Gemini API key
+
+### Workflow Integration
+When Gemini is enabled, the workflow becomes:
+1. Generate project context (standard process)
+2. **Automatically send to Gemini API**
+3. **Stream response with progress indicator**
+4. **Save both original context and AI response**
+
+### Output Files
+- **Gemini Disabled**: `shotgun_context_{prompt_type}.txt` (standard behavior)
+- **Gemini Enabled**: 
+  - `shotgun_context_{prompt_type}.txt` (original context)
+  - `shotgun_response_{timestamp}.txt` (Gemini AI response)
+
+### Configuration Example
+```json
+{
+  "geminiSettings": {
+    "api_key": "your-gemini-api-key",
+    "enable_gemini": true,
+    "temperature": 0.35,
+    "thinking_budget": 32768
+  }
+}
+```
+
+### Installation Requirements
+```bash
+# Install optional Gemini dependency
+pip install google-genai
 ```
 
 ## 🔧 Advanced Usage
@@ -279,6 +353,17 @@ shotgun-terminal -p bug -o bug-report.txt
 1. Task: "Login endpoint returns 500 error"
 2. Output: Debugging analysis report
 
+### Example 4: Automated AI Processing
+```bash
+shotgun-terminal -p dev
+```
+1. Task: "Add user authentication system"
+2. Rules: "Use JWT tokens and bcrypt hashing"
+3. **Gemini enabled**: Automatically processes prompt
+4. Output: 
+   - `shotgun_context_dev.txt` (original context)
+   - `shotgun_response_20241224_143052.txt` (AI response)
+
 ## 🛠️ Development
 
 ### Setup Development Environment
@@ -308,6 +393,7 @@ shotgun-terminal/
 │   ├── config.py           # API configuration
 │   ├── context_generator.py # Context generation
 │   ├── file_selector.py    # File selection logic
+│   ├── gemini_service.py   # Gemini AI integration
 │   ├── prompts.py          # Prompt templates
 │   ├── settings.py         # Settings management
 │   ├── translator.py       # Translation service
@@ -329,6 +415,7 @@ shotgun-terminal/
   - `inquirer` >= 2.8.0
   - `openai` >= 1.0.0 (for translation)
   - `requests` >= 2.25.0
+  - `google-genai` >= 1.0.0 (optional, for Gemini integration)
 
 ## 🤝 Contributing
 
@@ -346,7 +433,8 @@ MIT License - see LICENSE file for details.
 
 - **Issues**: Report bugs and request features
 - **Documentation**: Check this README for detailed usage
-- **API Configuration**: Use `--config` for setup help
+- **API Configuration**: Use `--config` for translation setup
+- **Gemini Configuration**: Use `--gemini-config` for AI integration setup
 
 ---
 
