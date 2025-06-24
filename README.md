@@ -67,11 +67,6 @@ pip install -e .
    shotgun-terminal --config
    ```
 
-4. **Configure Gemini AI Integration**
-   ```bash
-   shotgun-terminal --gemini-config
-   ```
-
 ## 📖 Usage
 
 ### Basic Workflow
@@ -130,8 +125,7 @@ Options:
   -d, --directory PATH     Project directory to analyze
   -o, --output PATH       Output file path 
   -p, --prompt-type TYPE  Prompt type (dev/architect/bug)
-  --config               Configure API settings for translation
-  --gemini-config        Configure Gemini API settings
+  --config               Configure API settings (translation, Gemini, etc.)
   --quick-setup          Quick setup with test credentials
   --help                 Show help message
 ```
@@ -179,7 +173,7 @@ shotgun-terminal --config
 ### Gemini API Configuration
 
 ```bash
-shotgun-terminal --gemini-config
+shotgun-terminal --config
 ```
 
 **Interactive Menu Options:**
@@ -433,8 +427,7 @@ MIT License - see LICENSE file for details.
 
 - **Issues**: Report bugs and request features
 - **Documentation**: Check this README for detailed usage
-- **API Configuration**: Use `--config` for translation setup
-- **Gemini Configuration**: Use `--gemini-config` for AI integration setup
+- **API Configuration**: Use `--config` to set up translation and Gemini.
 
 ---
 
